@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="A premium, interactive PCB Design Classification Calculator based on Eurocircuits standards. Supports Pattern Classes 3 to 9 and Drill Classes A to E, validating tool sizes, annular rings, aspect ratios, and copper thickness.">
+  <meta name="author" content="Antigravity PCB Tools">
+  <title>Eurocircuits PCB Design Classification &amp; Annular Ring Calculator</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    
+    <!-- Decorative background elements -->
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+    
+    <!-- Top Header -->
+    <header class="app-header">
+      <div class="header-logo">
+        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="logo-icon">
+          <!-- Eurocircuits circular pad & drill tool size representation -->
+          <circle cx="50" cy="50" r="45" stroke="currentColor" stroke-width="3" stroke-dasharray="8 4" opacity="0.3" />
+          <circle cx="50" cy="50" r="36" stroke="currentColor" stroke-width="7" class="logo-pad" />
+          <circle cx="50" cy="50" r="22" stroke="#ef4444" stroke-width="2" stroke-dasharray="4 2" opacity="0.8" />
+          <circle cx="50" cy="50" r="14" fill="#0B0F19" stroke="currentColor" stroke-width="3" class="logo-drill" />
+          <!-- Track connection -->
+          <path d="M50 86 L50 98" stroke="currentColor" stroke-width="8" stroke-linecap="round" />
+        </svg>
+        <div class="header-titles">
+          <h1>Eurocircuits PCB Design Classifier</h1>
+          <p class="subtitle">Pattern &amp; Drill Class Capability &amp; Annular Ring Calculator</p>
+        </div>
+      </div>
+      
+      <!-- Global Controls -->
+      <div class="global-actions">
+        <!-- Unit Toggle -->
+        <div class="unit-toggle-wrapper">
+          <span class="toggle-label">Unit System:</span>
+          <div class="toggle-switch">
+            <input type="radio" id="unit-mm" name="unit-system" value="mm" checked>
+            <label for="unit-mm">Metric (mm)</label>
+            <input type="radio" id="unit-mils" name="unit-system" value="mils">
+            <label for="unit-mils">Imperial (mils)</label>
+            <span class="toggle-slider"></span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <div class="app-layout">
+      
+      <!-- Column 1: Input Controls (Left Sidebar) -->
+      <aside class="controls-panel">
+        <section class="card panel-card">
+          <div class="card-header">
+            <div class="header-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>
+            </div>
+            <h2>Design Parameters</h2>
+          </div>
+          
+          <div class="card-body">
+            <!-- Target Pattern Class Selection (3-9) -->
+            <div class="input-block">
+              <label class="control-label" id="pattern-class-label">Target Pattern Class</label>
+              <div class="pattern-class-group" role="radiogroup" aria-labelledby="pattern-class-label">
+                <button type="button" class="class-btn" data-class="3" role="radio" aria-checked="false" id="btn-pat-3">3</button>
+                <button type="button" class="class-btn" data-class="4" role="radio" aria-checked="false" id="btn-pat-4">4</button>
+                <button type="button" class="class-btn" data-class="5" role="radio" aria-checked="false" id="btn-pat-5">5</button>
+                <button type="button" class="class-btn active" data-class="6" role="radio" aria-checked="true" id="btn-pat-6">6</button>
+                <button type="button" class="class-btn" data-class="7" role="radio" aria-checked="false" id="btn-pat-7">7</button>
+                <button type="button" class="class-btn" data-class="8" role="radio" aria-checked="false" id="btn-pat-8">8</button>
+                <button type="button" class="class-btn" data-class="9" role="radio" aria-checked="false" id="btn-pat-9">9</button>
+              </div>
+            </div>
+
+            <!-- Target Drill Class Selection (A-E) -->
+            <div class="input-block">
+              <label class="control-label" id="drill-class-label">Target Drill Class</label>
+              <div class="drill-class-group" role="radiogroup" aria-labelledby="drill-class-label">
+                <button type="button" class="class-btn" data-drill-class="A" role="radio" aria-checked="false" id="btn-dr-A">A</button>
+                <button type="button" class="class-btn" data-drill-class="B" role="radio" aria-checked="false" id="btn-dr-B">B</button>
+                <button type="button" class="class-btn active" data-drill-class="C" role="radio" aria-checked="true" id="btn-dr-C">C</button>
+                <button type="button" class="class-btn" data-drill-class="D" role="radio" aria-checked="false" id="btn-dr-D">D</button>
+                <button type="button" class="class-btn" data-drill-class="E" role="radio" aria-checked="false" id="btn-dr-E">E</button>
+              </div>
+            </div>
+            
+            <div class="divider-text">Component Lead</div>
+            
+            <div class="inputs-grid">
+              <div class="input-block">
+                <label for="lead-shape" class="control-label">Lead Shape</label>
+                <select id="lead-shape" class="select-input">
+                  <option value="round" selected>Round Pin</option>
+                  <option value="rectangular">Rectangular</option>
+                </select>
+              </div>
+              
+              <div class="input-block" id="block-lead-dia">
+                <label for="lead-diameter" class="control-label">
+                  Lead Dia.
+                  <span class="unit-indicator">mm</span>
+                </label>
+                <div class="input-wrapper">
+                  <input type="number" id="lead-diameter" class="numeric-input" value="0.60" step="0.05" min="0.05" max="5.0">
+                </div>
+              </div>
+            </div>
+            
+            <!-- Conditional Rectangular Fields -->
+            <div class="inputs-grid hidden" id="block-lead-rect">
+              <div class="input-block">
+                <label for="lead-width" class="control-label">
+                  Lead Width
+                  <span class="unit-indicator">mm</span>
+                </label>
+                <div class="input-wrapper">
+                  <input type="number" id="lead-width" class="numeric-input" value="0.50" step="0.05" min="0.05" max="5.0">
+                </div>
+              </div>
+              <div class="input-block">
+                <label for="lead-thickness" class="control-label">
+                  Thickness
+                  <span class="unit-indicator">mm</span>
+                </label>
+                <div class="input-wrapper">
+                  <input type="number" id="lead-thickness" class="numeric-input" value="0.50" step="0.05" min="0.05" max="5.0">
+                </div>
+              </div>
+            </div>
+            
+            <div class="inputs-grid" style="margin-bottom: 0.25rem;">
+              <div class="input-block">
+                <label for="ipc-level" class="control-label">IPC-7251 Level</label>
+                <select id="ipc-level" class="select-input">
+                  <option value="A">Level A (Easy)</option>
+                  <option value="B" selected>Level B (Std)</option>
+                  <option value="C">Level C (Tight)</option>
+                </select>
+              </div>
+              
+              <div class="input-block" style="display: flex; align-items: center; justify-content: flex-start; margin-top: 1.15rem;">
+                <label for="auto-calc-hole" style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.725rem; color: var(--text-secondary); cursor: pointer; user-select: none;">
+                  <input type="checkbox" id="auto-calc-hole" checked style="accent-color: var(--copper-color); width: 14px; height: 14px; margin: 0;">
+                  Auto Hole Size
+                </label>
+              </div>
+            </div>
+            
+            <div class="divider-text">Hole &amp; Pad Geometry</div>
+            
+            <!-- Geometry Inputs -->
+            <div class="inputs-grid">
+              <div class="input-block">
+                <label for="hole-type" class="control-label">Hole Type</label>
+                <select id="hole-type" class="select-input">
+                  <option value="PTH" selected>Plated (PTH)</option>
+                  <option value="NPTH">Non-Plated (NPTH)</option>
+                </select>
+              </div>
+              
+              <div class="input-block">
+                <label for="finished-hole" class="control-label">
+                  Finished Hole (d)
+                  <span class="unit-indicator">mm</span>
+                </label>
+                <div class="input-wrapper">
+                  <input type="number" id="finished-hole" class="numeric-input" value="0.25" step="0.05" min="0.05" max="10.0">
+                  <span class="input-icon">⌀</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="inputs-grid">
+              <div class="input-block">
+                <label for="drill-size" class="control-label">
+                  TOOLSIZE (Drill)
+                  <span class="unit-indicator">mm</span>
+                </label>
+                <div class="input-wrapper">
+                  <input type="number" id="drill-size" class="numeric-input" value="0.35" disabled style="opacity: 0.6; cursor: not-allowed;">
+                  <span class="input-icon">▤</span>
+                </div>
+              </div>
+              
+              <div class="input-block">
+                <label for="pad-diameter" class="control-label">
+                  Pad Diameter (D)
+                  <span class="unit-indicator">mm</span>
+                </label>
+                <div class="input-wrapper">
+                  <input type="number" id="pad-diameter" class="numeric-input" value="0.60" step="0.05" min="0.10" max="25.0">
+                  <span class="input-icon">◯</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="input-block" style="margin-top: -0.25rem;">
+              <div class="slider-container">
+                <input type="range" id="pad-slider" min="0.35" max="1.5" step="0.01" value="0.60" aria-label="Pad diameter slider">
+              </div>
+            </div>
+            
+            <div class="divider-text">Stackup &amp; Materials</div>
+            
+            <!-- Stackup Inputs -->
+            <div class="inputs-grid" style="grid-template-columns: 1fr 1fr 1.2fr;">
+              <div class="input-block">
+                <label for="board-thickness" class="control-label">
+                  Thickness
+                  <span class="unit-indicator">mm</span>
+                </label>
+                <div class="input-wrapper">
+                  <input type="number" id="board-thickness" class="numeric-input" value="1.60" step="0.1" min="0.10" max="6.0">
+                </div>
+              </div>
+              
+              <div class="input-block">
+                <label for="copper-weight" class="control-label">Base Cu</label>
+                <select id="copper-weight" class="select-input">
+                  <option value="12">12 µm</option>
+                  <option value="18">18 µm</option>
+                  <option value="35" selected>35 µm</option>
+                  <option value="70">70 µm</option>
+                  <option value="105">105 µm</option>
+                </select>
+              </div>
+
+              <div class="input-block">
+                <label for="layer-type" class="control-label">Placement</label>
+                <select id="layer-type" class="select-input">
+                  <option value="external" selected>External</option>
+                  <option value="internal">Internal</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </section>
+      </aside>
+      
+      <!-- Column 2: Visualization Panel (Hero Results, Visualizers, Safety Scale) -->
+      <div class="viz-panel">
+        
+        <!-- Interactive SVGs & Graphical Scale Grid -->
+        <section class="card visualization-card">
+          <div class="card-header">
+            <div class="header-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+            </div>
+            <h2>Interactive 2D Visualizer</h2>
+            <div class="viz-view-toggle">
+              <button class="view-tab-btn active" id="tab-btn-top">Top View</button>
+              <button class="view-tab-btn" id="tab-btn-cross">Cross-Section</button>
+            </div>
+          </div>
+          
+          <div class="card-body viz-area">
+            <!-- Top View SVG Container -->
+            <div class="svg-container" id="container-viz-top">
+              <svg id="svg-top-view" viewBox="0 0 400 320" width="100%" height="320">
+                <defs>
+                  <radialGradient id="pad-grad" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stop-color="#E27A3F" />
+                    <stop offset="85%" stop-color="#CA6228" />
+                    <stop offset="100%" stop-color="#9C4412" />
+                  </radialGradient>
+                  <radialGradient id="laminate-grad" cx="50%" cy="50%" r="70%">
+                    <stop offset="0%" stop-color="#141E30" />
+                    <stop offset="100%" stop-color="#0B0F19" />
+                  </radialGradient>
+                  <pattern id="grid-pattern" width="20" height="20" patternUnits="userSpaceOnUse">
+                    <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#ffffff" stroke-width="0.5" opacity="0.05" />
+                  </pattern>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#laminate-grad)" />
+                <rect width="100%" height="100%" fill="url(#grid-pattern)" />
+                <g id="svg-top-group">
+                  <!-- SVG nodes injected by JS -->
+                </g>
+              </svg>
+            </div>
+            
+            <!-- Cross Section SVG Container (Hidden by default) -->
+            <div class="svg-container hidden" id="container-viz-cross">
+              <svg id="svg-cross-view" viewBox="0 0 400 320" width="100%" height="320">
+                <rect width="100%" height="100%" fill="url(#laminate-grad)" />
+                <rect width="100%" height="100%" fill="url(#grid-pattern)" />
+                <g id="svg-cross-group">
+                  <!-- SVG nodes injected by JS -->
+                </g>
+              </svg>
+            </div>
+            
+            <!-- Visual Annular Ring Gauge -->
+            <div class="gauge-section">
+              <div class="gauge-header">
+                <span class="gauge-title">Manufacturing Safety Scale</span>
+                <span class="gauge-current-val" id="gauge-numerical-val">0.125 mm</span>
+              </div>
+              <div class="gauge-track-wrapper">
+                <div class="gauge-track">
+                  <div class="gauge-zone zone-breakout" style="width: 25%;" title="Under Spec / Breakout"></div>
+                  <div class="gauge-zone zone-marginal" style="width: 15%;" title="Marginal Fit"></div>
+                  <div class="gauge-zone zone-good" style="width: 30%;" title="Good Manufacturing Margin"></div>
+                  <div class="gauge-zone zone-excellent" style="width: 30%;" title="Excellent Yield Margin"></div>
+                  <div class="gauge-pin" id="gauge-indicator-pin" style="left: 40%;"></div>
+                </div>
+              </div>
+              <div class="gauge-labels" id="gauge-axis-labels">
+                <!-- Labels injected by JS -->
+              </div>
+              <div class="gauge-legend">
+                <div class="legend-dot-item"><span class="dot dot-red"></span>Fail</div>
+                <div class="legend-dot-item"><span class="dot dot-orange"></span>Marginal</div>
+                <div class="legend-dot-item"><span class="dot dot-green"></span>Good</div>
+                <div class="legend-dot-item"><span class="dot dot-blue"></span>Excellent</div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+      
+      <!-- Column 3: Specs & Actions Panel -->
+      <div class="specs-panel">
+        
+        <!-- Hero Section: Annular Ring Output Summary -->
+        <section class="card hero-results-card" id="main-results-card">
+          <div class="hero-left">
+            <div class="compliance-badge" id="ipc-compliance-badge">Pattern Class 6 OK</div>
+            <div class="hero-metric">
+              <span class="metric-label" id="oar-label">Design Annular Ring (OAR)</span>
+              <div class="metric-value-wrapper">
+                <span class="metric-value" id="val-worst-case">0.125</span>
+                <span class="metric-unit" id="unit-worst-case">mm</span>
+              </div>
+            </div>
+          </div>
+          <div class="hero-divider"></div>
+          <div class="hero-right">
+            <div class="metric-mini">
+              <span class="mini-label">Calculated TOOLSIZE</span>
+              <span class="mini-value" id="val-nominal-ring">0.350 mm</span>
+            </div>
+            <div class="metric-mini">
+              <span class="mini-label">Required Min Annular Ring</span>
+              <span class="mini-value" id="val-required-min">0.125 mm</span>
+            </div>
+            <div class="metric-mini">
+              <span class="mini-label">Eurocircuits Margin</span>
+              <span class="mini-value" id="val-safety-margin" data-state="pass">+0.000 mm</span>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Eurocircuits Requirement Table Matrix -->
+        <section class="card compliance-matrix-card">
+          <div class="card-header">
+            <div class="header-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7"/><path d="M12 3v18"/><path d="M5 3h7v18H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/></svg>
+            </div>
+            <h2>Eurocircuits Pattern Class Specifications</h2>
+          </div>
+          <div class="card-body table-responsive">
+            <table class="compliance-table" id="euro-pattern-table">
+              <thead>
+                <tr>
+                  <th scope="col">Pattern Parameter</th>
+                  <th scope="col" style="text-align: center;">Class 3</th>
+                  <th scope="col" style="text-align: center;">Class 4</th>
+                  <th scope="col" style="text-align: center;">Class 5</th>
+                  <th scope="col" style="text-align: center;">Class 6</th>
+                  <th scope="col" style="text-align: center;">Class 7</th>
+                  <th scope="col" style="text-align: center;">Class 8</th>
+                  <th scope="col" style="text-align: center;">Class 9</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr id="row-pat-oar">
+                  <td class="feature-name">Outer Annular Ring (OAR) &ge;</td>
+                  <td class="req-val">0.200 mm</td>
+                  <td class="req-val">0.150 mm</td>
+                  <td class="req-val">0.150 mm</td>
+                  <td class="req-val">0.125 mm</td>
+                  <td class="req-val">0.125 mm</td>
+                  <td class="req-val">0.100 mm</td>
+                  <td class="req-val">0.100 mm</td>
+                </tr>
+                <tr id="row-pat-iar">
+                  <td class="feature-name">Inner Annular Ring (IAR) &ge;</td>
+                  <td class="req-val">0.200 mm</td>
+                  <td class="req-val">0.150 mm</td>
+                  <td class="req-val">0.150 mm</td>
+                  <td class="req-val">0.125 mm</td>
+                  <td class="req-val">0.125 mm</td>
+                  <td class="req-val">0.125 mm</td>
+                  <td class="req-val">0.100 mm</td>
+                </tr>
+                <tr id="row-pat-otw">
+                  <td class="feature-name">Track Width / Gap &ge;</td>
+                  <td class="req-val">0.250 mm</td>
+                  <td class="req-val">0.200 mm</td>
+                  <td class="req-val">0.175 mm</td>
+                  <td class="req-val">0.150 mm</td>
+                  <td class="req-val">0.125 mm</td>
+                  <td class="req-val">0.100 mm</td>
+                  <td class="req-val">0.090 mm</td>
+                </tr>
+                <tr id="row-pat-ipi">
+                  <td class="feature-name">Inner Pad Insulation (IPI) &ge;</td>
+                  <td class="req-val">0.275 mm</td>
+                  <td class="req-val">0.225 mm</td>
+                  <td class="req-val">0.225 mm</td>
+                  <td class="req-val">0.200 mm</td>
+                  <td class="req-val">0.200 mm</td>
+                  <td class="req-val">0.200 mm</td>
+                  <td class="req-val">0.200 mm</td>
+                </tr>
+                <tr class="design-result-row" id="row-design-qualify">
+                  <td class="feature-name"><strong>Your Design Qualifies</strong></td>
+                  <td class="result-status-cell" id="res-pat3">-</td>
+                  <td class="result-status-cell" id="res-pat4">-</td>
+                  <td class="result-status-cell" id="res-pat5">-</td>
+                  <td class="result-status-cell" id="res-pat6">-</td>
+                  <td class="result-status-cell" id="res-pat7">-</td>
+                  <td class="result-status-cell" id="res-pat8">-</td>
+                  <td class="result-status-cell" id="res-pat9">-</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Eurocircuits Drill Table Matrix -->
+        <section class="card compliance-matrix-card">
+          <div class="card-header">
+            <div class="header-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="22"/></svg>
+            </div>
+            <h2>Eurocircuits Drill Class Specifications</h2>
+          </div>
+          <div class="card-body table-responsive">
+            <table class="compliance-table" id="euro-drill-table">
+              <thead>
+                <tr>
+                  <th scope="col">Drill Parameter</th>
+                  <th scope="col" style="text-align: center;">Class A</th>
+                  <th scope="col" style="text-align: center;">Class B</th>
+                  <th scope="col" style="text-align: center;">Class C</th>
+                  <th scope="col" style="text-align: center;">Class D</th>
+                  <th scope="col" style="text-align: center;">Class E</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr id="row-dr-pth">
+                  <td class="feature-name">Min Plated Through Hole (PTH) &ge;</td>
+                  <td class="req-val">0.50 mm</td>
+                  <td class="req-val">0.35 mm</td>
+                  <td class="req-val">0.25 mm</td>
+                  <td class="req-val">0.15 mm</td>
+                  <td class="req-val">0.10 mm</td>
+                </tr>
+                <tr id="row-dr-npth">
+                  <td class="feature-name">Min Non-Plated Hole (NPTH) &ge;</td>
+                  <td class="req-val">0.60 mm</td>
+                  <td class="req-val">0.45 mm</td>
+                  <td class="req-val">0.35 mm</td>
+                  <td class="req-val">0.25 mm</td>
+                  <td class="req-val">0.20 mm</td>
+                </tr>
+                <tr class="design-result-row" id="row-drill-qualify">
+                  <td class="feature-name"><strong>Your Design Qualifies</strong></td>
+                  <td class="result-status-cell" id="res-drA">-</td>
+                  <td class="result-status-cell" id="res-drB">-</td>
+                  <td class="result-status-cell" id="res-drC">-</td>
+                  <td class="result-status-cell" id="res-drD">-</td>
+                  <td class="result-status-cell" id="res-drE">-</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+        
+
+        
+      </div>
+
+      <!-- Row 2: Analytical Parameters (Spans all columns) -->
+      <section class="card analysis-card">
+        <div class="card-header">
+          <div class="header-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          </div>
+          <h2>Analytical Parameters</h2>
+        </div>
+        <div class="card-body">
+          <div class="metrics-grid">
+            
+            <!-- Metric 1: Aspect Ratio -->
+            <div class="analytic-item-card" id="card-breakout-risk">
+              <div class="item-icon-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-shield"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M12 2v9"/></svg>
+              </div>
+              <div class="item-text">
+                <span class="item-label">Aspect Ratio (AR)</span>
+                <span class="item-value" id="val-pad-ratio">4.57 : 1</span>
+                <span class="item-note" id="note-breakout">Eurocircuits limit is 8:1 (PTH)</span>
+              </div>
+            </div>
+            
+            <!-- Metric 2: Pattern Resolution -->
+            <div class="analytic-item-card" id="card-pattern-res">
+              <div class="item-icon-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-sliders"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="2" y1="14" x2="6" y2="14"/><line x1="10" y1="8" x2="14" y2="8"/><line x1="18" y1="16" x2="22" y2="16"/></svg>
+              </div>
+              <div class="item-text">
+                <span class="item-label">Min Track / Gap</span>
+                <span class="item-value" id="val-track-width">0.150 mm</span>
+                <span class="item-note" id="note-track-width">Determined by Pattern Class 6</span>
+              </div>
+            </div>
+            
+            <!-- Metric 3: Drill Size Compatibility -->
+            <div class="analytic-item-card" id="card-drill-compat">
+              <div class="item-icon-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-sliders"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+              </div>
+              <div class="item-text">
+                <span class="item-label">Drill Classification</span>
+                <span class="item-value" id="val-drill-class">Drill Class C</span>
+                <span class="item-note" id="note-drill-class">Min PTH for Class C is 0.25 mm</span>
+              </div>
+            </div>
+            
+            <!-- Metric 4: Copper Thickness Check -->
+            <div class="analytic-item-card" id="card-copper-thick">
+              <div class="item-icon-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-layers"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+              </div>
+              <div class="item-text">
+                <span class="item-label">Base Cu Compatibility</span>
+                <span class="item-value" id="val-plating-thickness">35 µm OK</span>
+                <span class="item-note" id="note-plating-thickness">Max Pattern Class for 35µm is Class 6</span>
+              </div>
+            </div>
+            
+            <!-- Metric 5: Inner Pad Insulation -->
+            <div class="analytic-item-card" id="card-tangency">
+              <div class="item-icon-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-help"><circle cx="12" cy="12" r="10"/><path d="M4.93 4.93l14.14 14.14"/></svg>
+              </div>
+              <div class="item-text">
+                <span class="item-label">Inner Insulation (IPI)</span>
+                <span class="item-value" id="val-tangency-status">0.200 mm</span>
+                <span class="item-note" id="note-tangency">Clearance to unconnected copper</span>
+              </div>
+            </div>
+            
+            <!-- Metric 6: Min Pad Required -->
+            <div class="analytic-item-card" id="card-min-pad">
+              <div class="item-icon-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-check"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <div class="item-text">
+                <span class="item-label">Min Pad Diameter</span>
+                <span class="item-value" id="val-min-pad-req">0.600 mm</span>
+                <span class="item-note" id="note-min-pad">Required diameter for Pattern Class 6</span>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+      </section>
+      
+      <!-- Row 3: Smart Design Recommendations (Spans all columns) -->
+      <section class="card recommendations-card">
+        <div class="card-header">
+          <div class="header-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 14h.01M12 8v4"/></svg>
+          </div>
+          <h2>Smart Design Recommendations</h2>
+        </div>
+        <div class="card-body">
+          <ul class="recommendation-list" id="recommendation-list-container">
+            <!-- Dynamically populated via JS -->
+          </ul>
+        </div>
+      </section>
+      
+    </div>
+    
+    <!-- Footer -->
+    <footer class="app-footer">
+      <div class="footer-content">
+        <p>&copy; 2026 Antigravity PCB Tools. Built in compliance with Eurocircuits PCB Design Classification specifications.</p>
+        <p class="footer-links">
+          <a href="https://www.eurocircuits.com/" target="_blank" rel="noopener noreferrer">Eurocircuits Official</a>
+        </p>
+      </div>
+    </footer>
+    
+  </div>
+
+  <!-- Application Logic -->
+  <script src="app.js"></script>
+</body>
+</html>
